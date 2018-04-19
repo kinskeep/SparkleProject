@@ -1,0 +1,203 @@
+#!/bin/csh
+#$ -M kinskeep@nd.edu
+#$ -m abe
+#$ -r y
+#$ -pe smp 2
+#$ -q long
+#$ -N Figures
+#$ -cwd
+#$ -v DISPLAY
+
+module load bio
+
+#python OnePerContigVCF.py Sparklef.keep.50.3.30.bi.75.filtered.HWE.DP14.recode.vcf Sparklef.final.vcf
+
+#make a faststructure file, cut off = 1, for faststructure analysis
+#java -Xmx1024m -Xms512M -jar /afs/crc.nd.edu/user/m/mdoellma/bin/PGDSpider_2.1.0.3/PGDSpider2-cli.jar \
+#-inputfile Sparklef.final.vcf -inputformat VCF \
+#-outputfile Rmendax.fast.1.str -outputformat STRUCTURE -spid Rmendax.1.spid
+#python RemoveMissing.fast.py Rmendax.fast.1.str 95
+
+#make structure file, cutoff = 1, for PCA
+#java -Xmx1024m -Xms512M -jar /afs/crc.nd.edu/user/m/mdoellma/bin/PGDSpider_2.1.0.3/PGDSpider2-cli.jar \
+#-inputfile Sparklef.final.vcf -inputformat VCF \
+#-outputfile Rmendax.1.str  -outputformat STRUCTURE -spid Rmendax.1B.spid
+#python RemoveMissing.py Rmendax.1.str 95
+
+#module load R/3.2.5
+#Rscript PCA.rscript
+
+#cat Rmendax.fast.1.95.str | awk '{print $1"\t"$2}' | uniq | awk '{print $2}' | grep -v 'SNP' | sed 's/15/SB_SC/g' | sed 's/14/SB_AR/g' | sed 's/13/SB_AL/g' | sed 's/12/DB_SC/g' | sed 's/11/DB_AR/g' | sed 's/10/DB_AL/g' | sed 's/9/SB_FL/g' | sed 's/8/DB_FL/g' | sed 's/7/BL_NS/g' | sed 's/6/BL_NJ/g' | sed 's/5/SB_KY/g' | sed 's/4/BL_IN/g' | sed 's/3/BL_MI/g' | sed 's/2/SB_GA/g' | sed 's/1/DB_SC2/g' > pop
+#cat pop | uniq > poporder
+
+#module load bio/faststructure/1.0
+#depth >=1
+#structure -K 1 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 2 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 3 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 4 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 5 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 6 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 7 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 8 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 9 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+#structure -K 10 --input=Rmendax.fast.1.95 --output=out.Rmendax.fast.1.95 --format=str
+
+#chooseK --input=out.Rmendax.fast.1.95
+#python distruct2.1.py -K 2 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K2.svg' \
+#--popfile=pop --title='R. mendax K=2'
+#python distruct2.1.py -K 3 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K3.svg' \
+#--popfile=pop --title='R. mendax K=3'
+#python distruct2.1.py -K 4 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K4.svg' \
+#--popfile=pop --title='R. mendax K=4'
+#python distruct2.1.py -K 5 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K5.svg' \
+#--popfile=pop --title='R. mendax K=5'
+#python distruct2.1.py -K 6 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K6.svg' \
+#--popfile=pop --title='R. mendax K=6'
+#python distruct2.1.py -K 7 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K7.svg' \
+#--popfile=pop --title='R. mendax K=7'
+#python distruct2.1.py -K 8 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K8.svg' \
+#--popfile=pop --title='R. mendax K=8'
+#python distruct2.1.py -K 9 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K9.svg' \
+#--popfile=pop --title='R. mendax K=9'
+#python distruct2.1.py -K 10 --input=out.Rmendax.fast.1.95 --output='Rmendax.1.95.K10.svg' \
+#--popfile=pop --title='R. mendax K=10'
+
+#grep -v 'V.NJ.033' Rmendax.fast.1.95.str > Rmendax.fast.1.95.NJ.str
+
+#grep -v 'V.NJ.033' Rmendax.1.95.str > Rmendax.1.95.NJ.str
+#module load R/3.2.5
+#Rscript PCA.NJ.rscript
+
+#cat Rmendax.fast.1.95.NJ.str | awk '{print $1"\t"$2}' | uniq | awk '{print $2}' | grep -v 'SNP' | sed 's/15/SB_SC/g' | sed 's/14/SB_AR/g' | sed 's/13/SB_AL/g' | sed 's/12/DB_SC/g' | sed 's/11/DB_AR/g' | sed 's/10/DB_AL/g' | sed 's/9/SB_FL/g' | sed 's/8/DB_FL/g' | sed 's/7/BL_NS/g' | sed 's/6/BL_NJ/g' | sed 's/5/SB_KY/g' | sed 's/4/BL_IN/g' | sed 's/3/BL_MI/g' | sed 's/2/SB_GA/g' | sed 's/1/DB_SC2/g' > pop
+#cat pop | uniq > poporder
+
+#module load bio/faststructure/1.0
+#depth >=1
+#structure -K 1 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 2 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 3 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 4 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 5 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 6 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 7 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 8 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 9 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+#structure -K 10 --input=Rmendax.fast.1.95.NJ --output=out.Rmendax.fast.1.95.NJ --format=str
+
+#chooseK --input=out.Rmendax.fast.1.95.NJ
+
+#python distruct2.1.py -K 2 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K2.v1.svg' --popfile=pop --title='R. mendax K=2'
+#python distruct2.1.py -K 2 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K2.v2.svg' --popfile=pop --title='R. mendax K=2'
+python distruct2.1.py -K 2 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K2.svg' --popfile=pop --title='R. mendax K=2'
+#python distruct2.1.py -K 3 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K3.svg' --popfile=pop --title='R. mendax K=3'
+#python distruct2.1.py -K 4 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K4.svg' --popfile=pop --title='R. mendax K=4'
+#python distruct2.1.py -K 5 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K5.svg' --popfile=pop --title='R. mendax K=5'
+#python distruct2.1.py -K 6 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K6.svg' --popfile=pop --title='R. mendax K=6'
+#python distruct2.1.py -K 7 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K7.svg' --popfile=pop --title='R. mendax K=7'
+#python distruct2.1.py -K 8 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K8.svg' --popfile=pop --title='R. mendax K=8'
+#python distruct2.1.py -K 9 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K9.svg' --popfile=pop --title='R. mendax K=9'
+#python distruct2.1.py -K 10 --input=out.Rmendax.fast.1.95.NJ --output='Rmendax.1.95.NJ.K10.svg' --popfile=pop --title='R. mendax K=10'
+
+#cat pop | sed -r 's/[[:alnum:]]*_//' | sed 's/Scotia/NS/' > temp
+#mv temp pop
+#cat pop | uniq > poporder
+
+#module load perl
+
+#perl arkansas.pl
+#perl florida.pl
+#perl alabama.pl
+#perl southcarolina.pl
+
+#perl MonteCarloSigRhagArkansas.pl arkansasdif.txt sigarkansasdif.txt textfiles/arkansas.txt
+#perl MonteCarloSigRhag.pl floridadif.txt sigfloridadif.txt textfiles/florida.txt
+#perl MonteCarloSigRhag.pl alabamadif.txt sigalabamadif.txt textfiles/alabama.txt
+#perl MonteCarloSigRhag.pl southcarolinadif.txt sigsouthcarolinadif.txt textfiles/southcarolina.txt
+
+#Structure run of blueberry and deerberry sites only
+#cat Rmendax.fast.BBDBonly.str | awk '{print $1"\t"$2}' | uniq | awk '{print $2}' | grep -v 'SNP' | sed 's/15/SB_SC/g' | sed 's/14/SB_AR/g' | sed 's/13/SB_AL/g' | sed 's/12/DB_SC/g' | sed 's/11/DB_AR/g' | sed 's/10/DB_AL/g' | sed 's/9/SB_FL/g' | sed 's/8/DB_FL/g' | sed 's/7/BL_NS/g' | sed 's/6/BL_NJ/g' | sed 's/5/SB_KY/g' | sed 's/4/BL_IN/g' | sed 's/3/BL_MI/g' | sed 's/2/SB_GA/g' | sed 's/1/DB_SC2/g' > pop
+#cat pop | uniq > poporder
+
+#module load bio/faststructure/1.0
+#depth >=1
+#structure -K 1 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 2 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 3 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 4 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 5 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 6 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 7 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 8 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 9 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+#structure -K 10 --input=Rmendax.fast.BBDBonly --output=out.Rmendax.fast.BBDBonly --format=str
+
+#chooseK --input=out.Rmendax.fast.BBDBonly
+
+#python distruct2.1.py -K 2 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K2.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=2'
+#python distruct2.1.py -K 3 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K3.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=3'
+#python distruct2.1.py -K 4 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K4.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=4'
+#python distruct2.1.py -K 5 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K5.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=5'
+#python distruct2.1.py -K 6 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K6.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=6'
+#python distruct2.1.py -K 7 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K7.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=7'
+#python distruct2.1.py -K 8 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K8.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=8'
+#python distruct2.1.py -K 9 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K9.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=9'
+#python distruct2.1.py -K 10 --input=out.Rmendax.fast.BBDBonly --output='Rmendax.BBDBonly.K10.svg' \
+#--popfile=pop --title='R. mendax Deerberry and Blueberry K=10'
+
+#Structure run of sparkleberry and deerberry sites only
+#cat Rmendax.fast.SBDBonly.str | awk '{print $1"\t"$2}' | uniq | awk '{print $2}' | grep -v 'SNP' | sed 's/15/SB_SC/g' | sed 's/14/SB_AR/g' | sed 's/13/SB_AL/g' | sed 's/12/DB_SC/g' | sed 's/11/DB_AR/g' | sed 's/10/DB_AL/g' | sed 's/9/SB_FL/g' | sed 's/8/DB_FL/g' | sed 's/7/BL_NS/g' | sed 's/6/BL_NJ/g' | sed 's/5/SB_KY/g' | sed 's/4/BL_IN/g' | sed 's/3/BL_MI/g' | sed 's/2/SB_GA/g' | sed 's/1/DB_SC2/g' > pop
+#cat pop | uniq > poporder
+
+#module load bio/faststructure/1.0
+#depth >=1
+#structure -K 1 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 2 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 3 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 4 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 5 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 6 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 7 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 8 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 9 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+#structure -K 10 --input=Rmendax.fast.SBDBonly --output=out.Rmendax.fast.SBDBonly --format=str
+
+#chooseK --input=out.Rmendax.fast.SBDBonly
+
+#python distruct2.1.py -K 2 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K2.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=2'
+#python distruct2.1.py -K 3 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K3.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=3'
+#python distruct2.1.py -K 4 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K4.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=4'
+#python distruct2.1.py -K 5 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K5.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=5'
+#python distruct2.1.py -K 6 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K6.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=6'
+#python distruct2.1.py -K 7 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K7.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=7'
+#python distruct2.1.py -K 8 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K8.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=8'
+#python distruct2.1.py -K 9 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K9.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=9'
+#python distruct2.1.py -K 10 --input=out.Rmendax.fast.SBDBonly --output='Rmendax.SBDBonly.K10.svg' \
+#--popfile=pop --title='R. mendax Deerberry vs Sparkleberry K=10'
+
+#module load R/3.2.5
+#Rscript PCA.NJ.BBDB.rscript
+#Rscript PCA.NJ.SBDB.rscript
+
+#vcftools --vcf Sparklef.keep.50.3.30.bi.75.filtered.HWE.DP14.recode.vcf --out Sparklef.keep.50.3.30.bi.75.filtered.HWE.DP14.recode --het
+
+#Trying something LD
+#vcftools --vcf Sparklef.keep.50.3.30.bi.75.filtered.HWE.DP14.recode.vcf --out Sparklef.keep.50.3.30.bi.75.filtered.HWE.DP14 --geno-r2
+#vcftools --vcf Sparklef.keep.50.3.30.bi.75.filtered.HWE.DP14.recode.vcf --out Sparklef.keep.50.3.30.bi.75.filtered.HWE.DP14 --interchrom-geno-r2
+

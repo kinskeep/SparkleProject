@@ -1,0 +1,53 @@
+#!/bin/csh
+#$ -M kinskeep@nd.edu
+#$ -m abe
+#$ -r y
+#$ -pe smp 16
+#$ -q long
+#$ -N CallSpa
+
+module load bio
+
+#Get basic mapping information, will print to .o file
+#samtools flagstat Sparklef.sorted.realign.bam
+#bam stats --in Sparklef.sorted.realign.bam --basic
+
+#Filter out unmapped reads
+#samtools view -F 0x04 -b Sparklef.sorted.realign.bam > Sparklef.sorted.realign.map.bam
+
+#Get basic mapping information,	will print to .o file
+#samtools flagstat Sparklef.sorted.realign.map.bam    
+#bam stats --in Sparklef.sorted.realign.map.bam --basic
+
+#Count reads aligned with map quality > phred 30
+#samtools view -q 30 -c Sparklef.sorted.realign.map.bam
+
+#Filter for map quality > phred 30
+#samtools view -q 30 -b Sparklef.sorted.realign.map.bam > Sparklef.sorted.map.q30.bam
+
+#Get basic mapping information, will print to .o file
+#samtools flagstat Sparklef.sorted.map.q30.bam
+#bam stats --in Sparklef.sorted.map.q30.bam --basic
+
+#Merge realigned bam files with R. mendax populations
+samtools merge Sparklef.map.merged.q30.bam Sparklef.sorted.map.q30.bam ../../2017_Summer/SNPs/bams/Rmendax.map.q30.bam
+
+#Index final bam file
+samtools index Sparklef.map.merged.q30.bam
+
+#Identify SNPs
+GenomeAnalysisTK \
+   -R MendaxGenome.fasta \
+   -dt BY_SAMPLE -dcov 250 \
+   -A DepthPerAlleleBySample \
+   -T UnifiedGenotyper \
+   -I Sparklef.map.merged.q30.bam \
+   -o Sparklef.map.merged.q30.GATK.UG.vcf \
+   -nt 16
+
+#Get basic SNP information
+vcftools --vcf Sparklef.map.merged.q30.GATK.UG.vcf --out Sparklef.map.merged.q30.GATK.UG --het
+vcftools --vcf Sparklef.map.merged.q30.GATK.UG.vcf --out Sparklef.map.merged.q30.GATK.UG --site-depth
+vcftools --vcf Sparklef.map.merged.q30.GATK.UG.vcf --out Sparklef.map.merged.q30.GATK.UG --site-mean-depth
+vcftools --vcf Sparklef.map.merged.q30.GATK.UG.vcf --out Sparklef.map.merged.q30.GATK.UG --depth
+vcftools --vcf Sparklef.map.merged.q30.GATK.UG.vcf --out Sparklef.map.merged.q30.GATK.UG --freq

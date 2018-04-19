@@ -1,0 +1,56 @@
+#!/bin/csh
+#$ -M kinskeep@nd.edu
+#$ -m abe
+#$ -r y
+#$ -pe smp 8
+#$ -q long
+#$ -N AlignSp
+
+cd /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/SparkleProject
+
+#module load bio/bwa/0.7.12
+#bwa index MendaxGenome.fasta
+#bwa mem -t 8 MendaxGenome.fasta Sparklef.demult.decontam.trimmed.filt.fq Sparkler.demult.decontam.trimmed.filt.crop.fq > Sparklef.sam
+
+#bwa mem -t 8 MendaxGenome.fasta Sparklef.demult.decontam.un.trimmed.filt.fq > Sparklef.unA.sam
+#bwa mem -t 8 MendaxGenome.fasta Sparkler.demult.decontam.trimmed.filt.crop.fq.demult.decontam.un.filt.crop.fq > Sparkler.demult.decont#am.trimmed.filt.crop.fq.unA.sam
+
+#bwa mem -t 8 MendaxGenome.fasta Sparklef.demult.decontam.trimmed.filt.un.fq > Sparklef.unB.sam
+#bwa mem -t 8 MendaxGenome.fasta Sparkler.demult.decontam.trimmed.filt.crop.un.fq > Sparkler.demult.decontam.trimmed.filt.crop.fq.unB.sam
+#echo "BWA alignment complete." > AlignSp.status.txt
+
+#grep -v '^@' Sparklef.unA.sam Sparkler.demult.decontam.trimmed.filt.crop.fq.unA.sam Sparklef.unB.sam Sparkler.demult.decontam.trimmed.filt.crop.fq.unB.sam > Sparklef.NOhead.sam
+#cat Sparklef.sam Sparklef.NOhead.sam > Sparklef.merge.sam
+#module load perl
+#perl AddSamplestoBam.pl
+#echo "Read groups and platform information added to SAM file." >> AlignSp.status.txt
+
+module load bio
+#samtools view -bS Sparklef.rg.sam > Sparklef.bam
+#echo "SAM to BAM conversion complete." >> AlignSp.status.txt
+
+#samtools sort -m 1G Sparklef.bam Sparklef.sorted
+#echo "BAM file sorted." >> AlignSp.status.txt
+
+#samtools index Sparklef.sorted.bam
+#samtools faidx MendaxGenome.fasta
+#echo "BAM and genome file indexing complete." >> AlignSp.status.txt
+
+#CreateSequenceDictionary REFERENCE=MendaxGenome.fasta OUTPUT=MendaxGenome.dict
+#echo "Dictionary file complete." >> AlignSp.status.txt
+
+GenomeAnalysisTK\
+-T RealignerTargetCreator \
+-R MendaxGenome.fasta \
+-I Sparklef.sorted.bam \
+-o forIndelRealigner.intervals
+echo "Targets identified by RealignerTargetCreator." >> AlignSp.status.txt
+
+GenomeAnalysisTK\
+-T IndelRealigner	\
+-R MendaxGenome.fasta	\
+-I Sparklef.sorted.bam \
+-targetIntervals forIndelRealigner.intervals \
+-o Sparklef.sorted.realign.bam
+echo "Local indel realignment complete." >> AlignSp.status.txt
+
