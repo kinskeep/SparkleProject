@@ -1,0 +1,23 @@
+#!/bin/csh
+#$ -M kinskeep@nd.edu
+#$ -m abe
+#$ -r y
+#$ -pe smp 8
+#$ -q long
+#$ -N monteCarlo
+#$ -cwd
+#$ -v DISPLAY
+module load bio
+
+perl DirecEstAllelFreq.5.pl
+perl alabama.pl
+perl arkansas.pl
+perl florida.pl
+perl southcarolina.pl
+
+perl MonteCarloSigRhag.pl alabamadif.txt sigALdif.txt alabama.txt
+perl MonteCarloSigRhag.pl arkansasdif.txt sigARdif.txt arkansas.txt
+perl MonteCarloSigRhag.pl floridadif.txt sigFLdif.txt florida.txt
+perl MonteCarloSigRhag.pl southcarolinadif.txt sigSCdif.txt southcarolina.txt
+
+

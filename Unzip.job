@@ -1,0 +1,60 @@
+#!/bin/csh
+#$ -M kinskeep@nd.edu
+#$ -m abe
+#$ -r y
+#$ -pe smp 16
+#$ -q long
+#$ -N Unzip
+
+module load bio
+
+#cd /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods
+
+#cp ../../../../suavis/RawData/ftp.biotec.illinois.edu/Stephens_KAI_pool.201823.tgz .
+#echo "Copied data file"
+#tar -zxvf Stephens_KAI_pool.201823.tgz
+#mv KAI_Pool_NoIndex_L005_R1_001.fastq Dogwoodf.fq
+#mv KAI_Pool_NoIndex_L005_R2_001.fastq Dogwoodr.fq
+
+fastqc Dogwoodf.fq
+fastqc Dogwoodr.fq
+mv Dogwood_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+mv Dogwoodr_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+echo Fastqc has finished running >> Unzip_status.txt
+
+radtag0_trimmer.py -o Dogwoodf.demult.fq -p Dogwoodr.fq -x Dogwoodr.demult.fq -k -e 0 barcodes.dogwood.fixed.txt Dogwoodf.fq
+echo First Trimmer has finished running >> Unzip_status.txt
+mv Dogwood.info /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/trimmer
+
+
+trimmomatic PE -threads 16 -phred33 Dogwoodf.demult.fq Dogwoodr.demult.fq Dogwoodf.demult.decontam.fq Dogwoodf.demult.decontam.un.fq Dogwoodr.demult.decontam.fq Dogwoodr.demult.decontam.un.fq ILLUMINACLIP:TruSeq3-PE-2.fa:2:30:10
+
+radtag0_trimmer.py -o Dogwoodf.demult.decontam.trimmed.fq -p Dogwoodr.demult.decontam.fq -x Dogwoodr.demult.decontam.trimmed.fq -g -e 0 barcodes.dogwood.fixed.txt Dogwoodf.demult.decontam.fq
+radtag0_trimmer.py -o Dogwoodf.demult.decontam.un.trimmed.fq -g barcodes.dogwood.fixed.txt Dogwoodf.demult.decontam.un.fq
+echo Second Trimmer has finished running >> Unzip_status.txt
+mv Dogwoodf.demult.decontam.info /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/trimmer
+mv Dogwoodf.demult.decontam.un.info /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/trimmer
+
+trimmomatic PE -threads 16 -phred33 Dogwoodf.demult.decontam.trimmed.fq Dogwoodr.demult.decontam.trimmed.fq Dogwoodf.demult.decontam.trimmed.filt.fq Dogwoodf.demult.decontam.trimmed.filt.un.fq Dogwoodr.demult.decontam.trimmed.filt.fq Dogwoodr.demult.decontam.trimmed.filt.un.fq LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:30
+trimmomatic SE -threads 16 -phred33 Dogwoodf.demult.decontam.un.trimmed.fq Dogwoodf.demult.decontam.un.trimmed.filt.fq LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:30
+trimmomatic SE -threads 16 -phred33 Dogwoodr.demult.decontam.un.fq Dogwoodr.demult.decontam.un.filt.fq LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 HEADCROP:10 MINLEN:30
+
+python removeTTT.py Dogwoodf.demult.decontam.un.trimmed.filt.fq
+
+trimmomatic SE -threads 16 -phred33 Dogwoodr.demult.decontam.trimmed.filt.fq Dogwoodr.demult.decontam.trimmed.filt.crop.fq HEADCROP:10
+trimmomatic SE -threads 16 -phred33 Dogwoodr.demult.decontam.trimmed.filt.un.fq Dogwoodr.demult.decontam.trimmed.filt.un.crop.fq HEADCROP:10
+
+
+fastqc Dogwoodf.demult.decontam.trimmed.filt.fq
+fastqc Dogwoodr.demult.decontam.trimmed.filt.crop.fq
+mv Dogwoodf.demult.decontam.trimmed.filt_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+mv Dogwoodr.demult.decontam.trimmed.filt.crop_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+fastqc Dogwoodf.demult.decontam.trimmed.filt.un.fq
+fastqc Dogwoodr.demult.decontam.trimmed.filt.un.crop.fq
+mv Dogwoodf.demult.decontam.trimmed.filt.un_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+mv Dogwoodr.demult.decontam.trimmed.filt.un.crop_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+fastqc Dogwoodf.demult.decontam.un.trimmed.filt.noT.fq
+fastqc Dogwoodr.demult.decontam.un.filt.fq
+mv Dogwoodf.demult.decontam.un.trimmed.filt.noT_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+mv Dogwoodr.demult.decontam.un.filt_fastqc.* /afs/crc.nd.edu/group/rhago/mendax/Katherine/2018_Spring/Dogwoods/fastqc_results
+echo Fastqc has finished running >> Unzip_status.txt

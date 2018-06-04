@@ -1,0 +1,17 @@
+1. Make barcode .tsv and .txt file using sent info from Meredith/ records from extractions
+	Make sure barcodes don't have _ in them
+	Do dos2unix to read in from Excel
+2. Download raw tar file from sequencing place
+	Also transfer genome to working directory
+3. Use RADscript.1_PE.py to generate job file 
+4. Prep job (Preppin.job) to move raw files, unzip them, and create demultiplexed, decontam, and trimmed files 
+5. Use RADscript.3_PE.py to make the alignment job
+6. Use alignment job (AlignSp.job) to align to Mendax Genome
+	Uses Realigner Target Creator function in GATK to identify SNP targets  
+	Delete the GATK command to fix Misencoded Quality Scores
+	Realign indels
+7. Use call job to call SNPs that aligned to the genome
+	Uses samtools extensively; filter out unmapped reads and reads with qual score <30
+8. For later comparisons across populations, merge bamtools at this point
+9. Continue call job to index bam with samtools and then identify SNPs with GATK
+
